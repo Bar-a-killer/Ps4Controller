@@ -46,6 +46,8 @@ static int findJoystick(int* buttonNum) {
     return joyId;
 }
 int repov = 0;
+POINT point;
+bool msmode = 0;
 int words[7] = { 0 };
 int max = 0, min = 65536;
 //手把拔出則傳回0，此時要重新尋找手把
@@ -76,6 +78,8 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 keybd_event(VK_ESCAPE, 0, 0, 0);// Escape键
             if(i == 3)
                 keybd_event(VK_TAB, 0, 0, 0);// Tab键
+            if (i == 4)
+                msmode = !msmode;
             if(i == 5)
                 keybd_event(VK_SHIFT, 0, 0, 0);//shift鍵
             if(i == 6)
@@ -84,6 +88,10 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 keybd_event(VK_SPACE, 0, 0, 0);//space鍵
             if(i == 8)
                 keybd_event(VK_RETURN, 0, 0, 0);//enter鍵    
+            if (i == 11)
+                ::mouse_event(MOUSEEVENTF_LEFTDOWN, point.x, point.y, 0, 0);
+            if (i == 12)
+                ::mouse_event(MOUSEEVENTF_RIGHTDOWN, point.x, point.y, 0, 0);
         }
         else {
             printf("button %d: release\n", i);
@@ -101,344 +109,374 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 keybd_event(VK_SPACE, 0, KEYEVENTF_KEYUP, 0);//space鍵
             if(i == 8)
                 keybd_event(VK_RETURN, 0, KEYEVENTF_KEYUP, 0);//enter鍵  
-                
+            if (i == 11)
+                ::mouse_event(MOUSEEVENTF_LEFTUP, point.x, point.y, 0, 0);
+            if (i == 12)
+                ::mouse_event(MOUSEEVENTF_RIGHTUP, point.x, point.y, 0, 0);
         }
     }
     //軸
     DWORD* joyinfoAxis = &joyinfo.dwXpos;
+    if (msmode) {
+        int x, y;
+        ::GetCursorPos(&point);
+        if (joyinfoAxis[2] > 13683 && joyinfoAxis[2] < 49151 && joyinfoAxis[3]>13683 && joyinfoAxis[3] < 49151)
+        {
+            x = joyinfoAxis[2] / 1600 - 20;
+            y = joyinfoAxis[3] / 1600 - 20;
+        }
+        else
+        {
+            x = joyinfoAxis[2] / 800 - 41;
+            y = joyinfoAxis[3] / 800 - 41;
+        }
+        if (x == -1 && y == -1)
+            x++, y++;
+        point.x += x;
+        point.y += y;
+        //printf("mos: %d %d\n", x, y);
+        ::SetCursorPos(point.x,point.y);
+        int wheel = joyinfoAxis[1] / 400 - 82;
+        if (wheel == -1)
+            wheel = 0;
+        ::mouse_event(MOUSEEVENTF_WHEEL, point.x, point.y, wheel, 0);
+    }
     for (int i = 0; i < 6; i++) {
         if (prevState->axis[i] != joyinfoAxis[i]) {
             //printf("axis %d: %d\n", i, joyinfoAxis[i]);
             
             int axis = joyinfoAxis[i];
-            bool change = 0;
-            if (axis < 2494 && words[i] != 1)
+            if(!msmode)
             {
-                words[i] = 1;
-                change = 1;
-            }
-            if (axis > 2494 && axis < 20227 && words[i] != 2)
-            {
-                words[i] = 2;
-                change = 1;
-            }
-            if (axis > 20227 && axis < 45036 && words[i] != 3)
-            {
-                words[i] = 3;
-                change = 1;
-            }
-            if (axis > 45036 && axis < 63039 && words[i] != 4)
-            {
-                words[i] = 4;
-                change = 1;
-            }
-            if (axis > 63039 && words[i] != 5)
-            {
-                words[i] = 5;
-                change = 1;
-            }
-
-
-            if (change) {
-                if (words[0] == 3 && words[1] == 1 && words[2] == 3 && words[3] == 1) {
-                    keybd_event('T', 0, 0, 0);
-                    keybd_event('T', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 2 && words[2] == 3 && words[3] == 1) {
-                    keybd_event('B', 0, 0, 0);
-                    keybd_event('B', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 5 && words[1] == 3 && words[2] == 3 && words[3] == 1) {
-                    keybd_event('C', 0, 0, 0);
-                    keybd_event('C', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 4 && words[2] == 3 && words[3] == 1) {
-                    keybd_event('D', 0, 0, 0);
-                    keybd_event('D', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 3 && words[1] == 5 && words[2] == 3 && words[3] == 1) {
-                    keybd_event('F', 0, 0, 0);
-                    keybd_event('F', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 4 && words[2] == 3 && words[3] == 1) {
-                    keybd_event('G', 0, 0, 0);
-                    keybd_event('G', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 1 && words[1] == 3 && words[2] == 3 && words[3] == 1) {
-                    keybd_event('1', 0, 0, 0);
-                    keybd_event('1', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 2 && words[2] == 3 && words[3] == 1) {
-                    keybd_event('8', 0, 0, 0);
-                    keybd_event('8', 0, KEYEVENTF_KEYUP, 0);
-                }
-                
-                if (words[0] == 3 && words[1] == 1 && words[2] == 2 && words[3] == 2) {
-                    keybd_event('H', 0, 0, 0);
-                    keybd_event('H', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 2 && words[2] == 2 && words[3] == 2) {
-                    keybd_event('J', 0, 0, 0);
-                    keybd_event('J', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 5 && words[1] == 3 && words[2] == 2 && words[3] == 2) {
-                    keybd_event('K', 0, 0, 0);
-                    keybd_event('K', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 4 && words[2] == 2 && words[3] == 2) {
-                    keybd_event('L', 0, 0, 0);
-                    keybd_event('L', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 3 && words[1] == 5 && words[2] == 2 && words[3] == 2) {
-                    keybd_event('M', 0, 0, 0);
-                    keybd_event('M', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 4 && words[2] == 2 && words[3] == 2) {
-                    keybd_event('N', 0, 0, 0);
-                    keybd_event('N', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 1 && words[1] == 3 && words[2] == 2 && words[3] == 2) {
-                    keybd_event('7', 0, 0, 0);
-                    keybd_event('7', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 2 && words[2] == 2 && words[3] == 2) {
-                    keybd_event('2', 0, 0, 0);
-                    keybd_event('2', 0, KEYEVENTF_KEYUP, 0);
-                }
-
-                if (words[0] == 3 && words[1] == 1 && words[2] == 1 && words[3] == 3) {
-                    keybd_event('E', 0, 0, 0);
-                    keybd_event('E', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 2 && words[2] == 1 && words[3] == 3) {
-                    keybd_event('A', 0, 0, 0);
-                    keybd_event('A', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 5 && words[1] == 3 && words[2] == 1 && words[3] == 3) {
-                    keybd_event('I', 0, 0, 0);
-                    keybd_event('I', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 4 && words[2] == 1 && words[3] == 3) {
-                    keybd_event('O', 0, 0, 0);
-                    keybd_event('O', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 3 && words[1] == 5 && words[2] == 1 && words[3] == 3) {
-                    keybd_event('U', 0, 0, 0);
-                    keybd_event('U', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 4 && words[2] == 1 && words[3] == 3) {
-                    keybd_event(VK_CONTROL, 0, 0, 0);
-                    keybd_event('C', 0, 0, 0);
-                    keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event('C', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 1 && words[1] == 3 && words[2] == 1 && words[3] == 3) {
-                    keybd_event('3', 0, 0, 0);
-                    keybd_event('3', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 2 && words[2] == 1 && words[3] == 3) {
-                    keybd_event('6', 0, 0, 0);
-                    keybd_event('6', 0, KEYEVENTF_KEYUP, 0);
-                }
-
-                if (words[0] == 3 && words[1] == 1 && words[2] == 2 && words[3] == 4) {
-                    keybd_event('R', 0, 0, 0);
-                    keybd_event('R', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 2 && words[2] == 2 && words[3] == 4) {
-                    keybd_event('P', 0, 0, 0);
-                    keybd_event('P', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 5 && words[1] == 3 && words[2] == 2 && words[3] == 4) {
-                    keybd_event('Q', 0, 0, 0);
-                    keybd_event('Q', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 4 && words[2] == 2 && words[3] == 4) {
-                    keybd_event('S', 0, 0, 0);
-                    keybd_event('S', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 3 && words[1] == 5 && words[2] == 2 && words[3] == 4) {
-                    keybd_event('T', 0, 0, 0);
-                    keybd_event('T', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 4 && words[2] == 2 && words[3] == 4) {
-                    keybd_event(VK_CONTROL, 0, 0, 0);
-                    keybd_event('V', 0, 0, 0);
-                    keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event('V', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 1 && words[1] == 3 && words[2] == 2 && words[3] == 4) {
-                    keybd_event('4', 0, 0, 0);
-                    keybd_event('4', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 2 && words[2] == 2 && words[3] == 4) {
-                    keybd_event('5', 0, 0, 0);
-                    keybd_event('5', 0, KEYEVENTF_KEYUP, 0);
-                }
-
-                if (words[0] == 3 && words[1] == 1 && words[2] == 3 && words[3] == 5) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event('1', 0, 0, 0);
-                    keybd_event('1', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 2 && words[2] == 3 && words[3] == 5) {
-                    keybd_event('?', 0, 0, 0);
-                    keybd_event('?', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 5 && words[1] == 3 && words[2] == 3 && words[3] == 5) {
-                    keybd_event(',', 0, 0, 0);
-                    keybd_event(',', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 4 && words[2] == 3 && words[3] == 5) {
-                    keybd_event('.', 0, 0, 0);
-                    keybd_event('.', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 3 && words[1] == 5 && words[2] == 3 && words[3] == 5) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event('`', 0, 0, 0);
-                    keybd_event('`', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 4 && words[2] == 3 && words[3] == 5) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event('-', 0, 0, 0);
-                    keybd_event('-', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 1 && words[1] == 3 && words[2] == 3 && words[3] == 5) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event(';', 0, 0, 0);
-                    keybd_event(';', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 2 && words[2] == 3 && words[3] == 5) {
-                    keybd_event(';', 0, 0, 0);
-                    keybd_event(';', 0, KEYEVENTF_KEYUP, 0);
-                }
-
-                if (words[0] == 3 && words[1] == 1 && words[2] == 4 && words[3] == 4) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event('9', 0, 0, 0);
-                    keybd_event('9', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 2 && words[2] == 4 && words[3] == 4) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event('0', 0, 0, 0);
-                    keybd_event('0', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 5 && words[1] == 3 && words[2] == 4 && words[3] == 4) {
-                    keybd_event(VK_OEM_4, 0, 0, 0);
-                    keybd_event(VK_OEM_4, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 4 && words[2] == 4 && words[3] == 4) {
-                    keybd_event(VK_OEM_6, 0, 0, 0);
-                    keybd_event(VK_OEM_6, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 3 && words[1] == 5 && words[2] == 4 && words[3] == 4) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event(VK_OEM_4, 0, 0, 0);
-                    keybd_event(VK_OEM_4, 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 4 && words[2] == 4 && words[3] == 4) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event(VK_OEM_6, 0, 0, 0);
-                    keybd_event(VK_OEM_6, 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 1 && words[1] == 3 && words[2] == 4 && words[3] == 4) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event(',', 0, 0, 0);
-                    keybd_event(',', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 2 && words[2] == 4 && words[3] == 4) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event('.', 0, 0, 0);
-                    keybd_event('.', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-
-                if (words[0] == 3 && words[1] == 1 && words[2] == 5 && words[3] == 3) {
-                    keybd_event(VK_OEM_PLUS, 0, 0, 0);
-                    keybd_event(VK_OEM_PLUS, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 2 && words[2] == 5 && words[3] == 3) {
-                    keybd_event(VK_OEM_MINUS, 0, 0, 0);
-                    keybd_event(VK_OEM_MINUS, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 5 && words[1] == 3 && words[2] == 5 && words[3] == 3) {
-                    keybd_event(VK_MULTIPLY, 0, 0, 0);
-                    keybd_event(VK_MULTIPLY, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 4 && words[2] == 5 && words[3] == 3) {
-                    keybd_event(VK_OEM_2, 0, 0, 0);
-                    keybd_event(VK_OEM_2, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 3 && words[1] == 5 && words[2] == 5 && words[3] == 3) {
-                    keybd_event(VK_SHIFT, 0, 0, 0); 
-                    keybd_event('7', 0, 0, 0);     
-                    keybd_event('7', 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 4 && words[2] == 5 && words[3] == 3) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event(VK_OEM_5, 0, 0, 0);
-                    keybd_event(VK_OEM_5, 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 1 && words[1] == 3 && words[2] == 5 && words[3] == 3) {
-                    keybd_event(VK_OEM_7, 0, 0, 0);
-                    keybd_event(VK_OEM_7, 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 2 && words[2] == 5 && words[3] == 3) {
-                    keybd_event(VK_SHIFT, 0, 0, 0);
-                    keybd_event(VK_OEM_7, 0, 0, 0);
-                    keybd_event(VK_OEM_7, 0, KEYEVENTF_KEYUP, 0);
-                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
-                }
-
-                if (words[0] == 3 && words[1] == 1 && words[2] == 4 && words[3] == 2) {
-                    keybd_event('V', 0, 0, 0);
-                    keybd_event('V', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 2 && words[2] == 4 && words[3] == 2) {
-                    keybd_event('W', 0, 0, 0);
-                    keybd_event('W', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 5 && words[1] == 3 && words[2] == 4 && words[3] == 2) {
-                    keybd_event('X', 0, 0, 0);
-                    keybd_event('X', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 4 && words[1] == 4 && words[2] == 4 && words[3] == 2) {
-                    keybd_event('Y', 0, 0, 0);
-                    keybd_event('Y', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 3 && words[1] == 5 && words[2] == 4 && words[3] == 2) {
-                    keybd_event('Z', 0, 0, 0);
-                    keybd_event('Z', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 4 && words[2] == 4 && words[3] == 2) {
-                    keybd_event('#', 0, 0, 0);
-                    keybd_event('#', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 1 && words[1] == 3 && words[2] == 4 && words[3] == 2) {
-                    keybd_event('0', 0, 0, 0);
-                    keybd_event('0', 0, KEYEVENTF_KEYUP, 0);
-                }
-                if (words[0] == 2 && words[1] == 2 && words[2] == 4 && words[3] == 2) {
-                    keybd_event('9', 0, 0, 0);
-                    keybd_event('9', 0, KEYEVENTF_KEYUP, 0);
-                }
-
-
-                if( i == 1)
+                bool change = 0;
+                if (axis < 2494 && words[i] != 1)
                 {
-                    printf("axis %d\n", i);
-                    printf("code: %d\n", words[i]);
+                    words[i] = 1;
+                    change = 1;
+                }
+                if (axis > 2494 && axis < 20227 && words[i] != 2)
+                {
+                    words[i] = 2;
+                    change = 1;
+                }
+                if (axis > 20227 && axis < 45036 && words[i] != 3)
+                {
+                    words[i] = 3;
+                    change = 1;
+                }
+                if (axis > 45036 && axis < 63039 && words[i] != 4)
+                {
+                    words[i] = 4;
+                    change = 1;
+                }
+                if (axis > 63039 && words[i] != 5)
+                {
+                    words[i] = 5;
+                    change = 1;
+                }
+
+
+                if (change) {
+                    if (words[0] == 3 && words[1] == 1 && words[2] == 3 && words[3] == 1) {
+                        keybd_event('T', 0, 0, 0);
+                        keybd_event('T', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 2 && words[2] == 3 && words[3] == 1) {
+                        keybd_event('B', 0, 0, 0);
+                        keybd_event('B', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 5 && words[1] == 3 && words[2] == 3 && words[3] == 1) {
+                        keybd_event('C', 0, 0, 0);
+                        keybd_event('C', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 4 && words[2] == 3 && words[3] == 1) {
+                        keybd_event('D', 0, 0, 0);
+                        keybd_event('D', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 3 && words[1] == 5 && words[2] == 3 && words[3] == 1) {
+                        keybd_event('F', 0, 0, 0);
+                        keybd_event('F', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 4 && words[2] == 3 && words[3] == 1) {
+                        keybd_event('G', 0, 0, 0);
+                        keybd_event('G', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 1 && words[1] == 3 && words[2] == 3 && words[3] == 1) {
+                        keybd_event('1', 0, 0, 0);
+                        keybd_event('1', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 3 && words[3] == 1) {
+                        keybd_event('8', 0, 0, 0);
+                        keybd_event('8', 0, KEYEVENTF_KEYUP, 0);
+                    }
+
+                    if (words[0] == 3 && words[1] == 1 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('H', 0, 0, 0);
+                        keybd_event('H', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 2 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('J', 0, 0, 0);
+                        keybd_event('J', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 5 && words[1] == 3 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('K', 0, 0, 0);
+                        keybd_event('K', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 4 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('L', 0, 0, 0);
+                        keybd_event('L', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 3 && words[1] == 5 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('M', 0, 0, 0);
+                        keybd_event('M', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 4 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('N', 0, 0, 0);
+                        keybd_event('N', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 1 && words[1] == 3 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('7', 0, 0, 0);
+                        keybd_event('7', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('2', 0, 0, 0);
+                        keybd_event('2', 0, KEYEVENTF_KEYUP, 0);
+                    }
+
+                    if (words[0] == 3 && words[1] == 1 && words[2] == 1 && words[3] == 3) {
+                        keybd_event('E', 0, 0, 0);
+                        keybd_event('E', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 2 && words[2] == 1 && words[3] == 3) {
+                        keybd_event('A', 0, 0, 0);
+                        keybd_event('A', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 5 && words[1] == 3 && words[2] == 1 && words[3] == 3) {
+                        keybd_event('I', 0, 0, 0);
+                        keybd_event('I', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 4 && words[2] == 1 && words[3] == 3) {
+                        keybd_event('O', 0, 0, 0);
+                        keybd_event('O', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 3 && words[1] == 5 && words[2] == 1 && words[3] == 3) {
+                        keybd_event('U', 0, 0, 0);
+                        keybd_event('U', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 4 && words[2] == 1 && words[3] == 3) {
+                        keybd_event(VK_CONTROL, 0, 0, 0);
+                        keybd_event('C', 0, 0, 0);
+                        keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event('C', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 1 && words[1] == 3 && words[2] == 1 && words[3] == 3) {
+                        keybd_event('3', 0, 0, 0);
+                        keybd_event('3', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 1 && words[3] == 3) {
+                        keybd_event('6', 0, 0, 0);
+                        keybd_event('6', 0, KEYEVENTF_KEYUP, 0);
+                    }
+
+                    if (words[0] == 3 && words[1] == 1 && words[2] == 2 && words[3] == 4) {
+                        keybd_event('R', 0, 0, 0);
+                        keybd_event('R', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 2 && words[2] == 2 && words[3] == 4) {
+                        keybd_event('P', 0, 0, 0);
+                        keybd_event('P', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 5 && words[1] == 3 && words[2] == 2 && words[3] == 4) {
+                        keybd_event('Q', 0, 0, 0);
+                        keybd_event('Q', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 4 && words[2] == 2 && words[3] == 4) {
+                        keybd_event('S', 0, 0, 0);
+                        keybd_event('S', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 3 && words[1] == 5 && words[2] == 2 && words[3] == 4) {
+                        keybd_event('T', 0, 0, 0);
+                        keybd_event('T', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 4 && words[2] == 2 && words[3] == 4) {
+                        keybd_event(VK_CONTROL, 0, 0, 0);
+                        keybd_event('V', 0, 0, 0);
+                        keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event('V', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 1 && words[1] == 3 && words[2] == 2 && words[3] == 4) {
+                        keybd_event('4', 0, 0, 0);
+                        keybd_event('4', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 2 && words[3] == 4) {
+                        keybd_event('5', 0, 0, 0);
+                        keybd_event('5', 0, KEYEVENTF_KEYUP, 0);
+                    }
+
+                    if (words[0] == 3 && words[1] == 1 && words[2] == 3 && words[3] == 5) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event('1', 0, 0, 0);
+                        keybd_event('1', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 2 && words[2] == 3 && words[3] == 5) {
+                        keybd_event('?', 0, 0, 0);
+                        keybd_event('?', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 5 && words[1] == 3 && words[2] == 3 && words[3] == 5) {
+                        keybd_event(',', 0, 0, 0);
+                        keybd_event(',', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 4 && words[2] == 3 && words[3] == 5) {
+                        keybd_event('.', 0, 0, 0);
+                        keybd_event('.', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 3 && words[1] == 5 && words[2] == 3 && words[3] == 5) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event('`', 0, 0, 0);
+                        keybd_event('`', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 4 && words[2] == 3 && words[3] == 5) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event('-', 0, 0, 0);
+                        keybd_event('-', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 1 && words[1] == 3 && words[2] == 3 && words[3] == 5) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event(';', 0, 0, 0);
+                        keybd_event(';', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 3 && words[3] == 5) {
+                        keybd_event(';', 0, 0, 0);
+                        keybd_event(';', 0, KEYEVENTF_KEYUP, 0);
+                    }
+
+                    if (words[0] == 3 && words[1] == 1 && words[2] == 4 && words[3] == 4) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event('9', 0, 0, 0);
+                        keybd_event('9', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 2 && words[2] == 4 && words[3] == 4) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event('0', 0, 0, 0);
+                        keybd_event('0', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 5 && words[1] == 3 && words[2] == 4 && words[3] == 4) {
+                        keybd_event(VK_OEM_4, 0, 0, 0);
+                        keybd_event(VK_OEM_4, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 4 && words[2] == 4 && words[3] == 4) {
+                        keybd_event(VK_OEM_6, 0, 0, 0);
+                        keybd_event(VK_OEM_6, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 3 && words[1] == 5 && words[2] == 4 && words[3] == 4) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event(VK_OEM_4, 0, 0, 0);
+                        keybd_event(VK_OEM_4, 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 4 && words[2] == 4 && words[3] == 4) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event(VK_OEM_6, 0, 0, 0);
+                        keybd_event(VK_OEM_6, 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 1 && words[1] == 3 && words[2] == 4 && words[3] == 4) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event(',', 0, 0, 0);
+                        keybd_event(',', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 4 && words[3] == 4) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event('.', 0, 0, 0);
+                        keybd_event('.', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+
+                    if (words[0] == 3 && words[1] == 1 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_OEM_PLUS, 0, 0, 0);
+                        keybd_event(VK_OEM_PLUS, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 2 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_OEM_MINUS, 0, 0, 0);
+                        keybd_event(VK_OEM_MINUS, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 5 && words[1] == 3 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_MULTIPLY, 0, 0, 0);
+                        keybd_event(VK_MULTIPLY, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 4 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_OEM_2, 0, 0, 0);
+                        keybd_event(VK_OEM_2, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 3 && words[1] == 5 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event('7', 0, 0, 0);
+                        keybd_event('7', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 4 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event(VK_OEM_5, 0, 0, 0);
+                        keybd_event(VK_OEM_5, 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 1 && words[1] == 3 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_OEM_7, 0, 0, 0);
+                        keybd_event(VK_OEM_7, 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event(VK_OEM_7, 0, 0, 0);
+                        keybd_event(VK_OEM_7, 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+                    }
+
+                    if (words[0] == 3 && words[1] == 1 && words[2] == 4 && words[3] == 2) {
+                        keybd_event('V', 0, 0, 0);
+                        keybd_event('V', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 2 && words[2] == 4 && words[3] == 2) {
+                        keybd_event('W', 0, 0, 0);
+                        keybd_event('W', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 5 && words[1] == 3 && words[2] == 4 && words[3] == 2) {
+                        keybd_event('X', 0, 0, 0);
+                        keybd_event('X', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 4 && words[1] == 4 && words[2] == 4 && words[3] == 2) {
+                        keybd_event('Y', 0, 0, 0);
+                        keybd_event('Y', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 3 && words[1] == 5 && words[2] == 4 && words[3] == 2) {
+                        keybd_event('Z', 0, 0, 0);
+                        keybd_event('Z', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 4 && words[2] == 4 && words[3] == 2) {
+                        keybd_event('#', 0, 0, 0);
+                        keybd_event('#', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 1 && words[1] == 3 && words[2] == 4 && words[3] == 2) {
+                        keybd_event('0', 0, 0, 0);
+                        keybd_event('0', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 4 && words[3] == 2) {
+                        keybd_event('9', 0, 0, 0);
+                        keybd_event('9', 0, KEYEVENTF_KEYUP, 0);
+                    }
+
+
+                    if (i == 1)
+                    {
+                        printf("axis %d\n", i);
+                        printf("code: %d\n", words[i]);
+                    }
                 }
             }
         }
