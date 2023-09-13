@@ -447,7 +447,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
     if (prevState->pov != joyinfo.dwPOV) {
         printf("POV: %u\n", joyinfo.dwPOV);
         int pov = joyinfo.dwPOV;
-        if (repov == 0) {
+        /*if (repov == 0) {
             keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
             keybd_event('Z', 0, KEYEVENTF_KEYUP, 0);
         }
@@ -456,32 +456,50 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
         keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
         if (repov == 18000)
             keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
-        if (pov == 22500) {
+        */if (pov == 22500) {
             keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
             keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
         }
+
         if (pov == 27000)
             keybd_event(VK_CONTROL, 0, 0, 0);
+        else
+            keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
 
         if (pov == 0) {
             keybd_event(VK_CONTROL, 0, 0, 0);
             keybd_event('Z', 0, 0, 0);
         }
-        if(pov == 9000)
+        else {
+            //keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+            keybd_event('Z', 0, KEYEVENTF_KEYUP, 0);
+        }
+        if (pov == 9000) {
             keybd_event(VK_LWIN, 0, 0, 0);
+            keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+        }
+        else
+            keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, 0);
         if(pov == 13500) {
             keybd_event(VK_LWIN, 0, 0, 0);
             keybd_event(VK_CAPITAL, 0, 0, 0);
         }
+        else {
+            keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, 0);
+            keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
+        }
         if(pov == 18000)
             keybd_event(VK_CAPITAL, 0, 0, 0);
+        else
+            keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
         if (pov == 22500) {
             keybd_event(VK_CAPITAL, 0, 0, 0);
             keybd_event(VK_CONTROL, 0, 0, 0);
         }
-        if(pov == 27000)
-            keybd_event(VK_CONTROL, 0, 0, 0);
-
+        else {
+            keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
+            //keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+        }
         repov = pov;
     }
 
