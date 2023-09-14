@@ -141,13 +141,14 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
             wheel = 0;
         ::mouse_event(MOUSEEVENTF_WHEEL, point.x, point.y, wheel, 0);
     }
-    for (int i = 0; i < 6; i++) {
-        if (prevState->axis[i] != joyinfoAxis[i]) {
-            //printf("axis %d: %d\n", i, joyinfoAxis[i]);
-            
-            int axis = joyinfoAxis[i];
-            if(!msmode)
-            {
+    if (!msmode)
+    {
+        for (int i = 0; i < 6; i++) {
+            if (prevState->axis[i] != joyinfoAxis[i]) {
+                //printf("axis %d: %d\n", i, joyinfoAxis[i]);
+
+                int axis = joyinfoAxis[i];
+
                 bool change = 0;
                 if (axis < 2494 && words[i] != 1)
                 {
@@ -235,12 +236,12 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         keybd_event('N', 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 1 && words[1] == 3 && words[2] == 2 && words[3] == 2) {
-                        keybd_event('7', 0, 0, 0);
-                        keybd_event('7', 0, KEYEVENTF_KEYUP, 0);
-                    }
-                    if (words[0] == 2 && words[1] == 2 && words[2] == 2 && words[3] == 2) {
                         keybd_event('2', 0, 0, 0);
                         keybd_event('2', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('7', 0, 0, 0);
+                        keybd_event('7', 0, KEYEVENTF_KEYUP, 0);
                     }
 
                     if (words[0] == 3 && words[1] == 1 && words[2] == 1 && words[3] == 3) {
@@ -477,10 +478,12 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         printf("axis %d\n", i);
                         printf("code: %d\n", words[i]);
                     }
+
                 }
             }
         }
     }
+    
     //視覺頭盔
     if (prevState->pov != joyinfo.dwPOV) {
         printf("POV: %u\n", joyinfo.dwPOV);
