@@ -235,12 +235,12 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         keybd_event('N', 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 1 && words[1] == 3 && words[2] == 2 && words[3] == 2) {
-                        keybd_event('7', 0, 0, 0);
-                        keybd_event('7', 0, KEYEVENTF_KEYUP, 0);
-                    }
-                    if (words[0] == 2 && words[1] == 2 && words[2] == 2 && words[3] == 2) {
                         keybd_event('2', 0, 0, 0);
                         keybd_event('2', 0, KEYEVENTF_KEYUP, 0);
+                    }
+                    if (words[0] == 2 && words[1] == 2 && words[2] == 2 && words[3] == 2) {
+                        keybd_event('7', 0, 0, 0);
+                        keybd_event('7', 0, KEYEVENTF_KEYUP, 0);
                     }
 
                     if (words[0] == 3 && words[1] == 1 && words[2] == 1 && words[3] == 3) {
@@ -320,38 +320,40 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 4 && words[1] == 2 && words[2] == 3 && words[3] == 5) {
-                        keybd_event('?', 0, 0, 0);
-                        keybd_event('?', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, 0, 0);
+                        keybd_event(VK_OEM_2, 0, 0, 0);
+                        keybd_event(VK_OEM_2, 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 5 && words[1] == 3 && words[2] == 3 && words[3] == 5) {
-                        keybd_event(',', 0, 0, 0);
-                        keybd_event(',', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_OEM_COMMA, 0, 0, 0);
+                        keybd_event(VK_OEM_COMMA, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 4 && words[1] == 4 && words[2] == 3 && words[3] == 5) {
-                        keybd_event('.', 0, 0, 0);
-                        keybd_event('.', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_OEM_PERIOD, 0, 0, 0);
+                        keybd_event(VK_OEM_PERIOD, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 3 && words[1] == 5 && words[2] == 3 && words[3] == 5) {
                         keybd_event(VK_SHIFT, 0, 0, 0);
-                        keybd_event('`', 0, 0, 0);
-                        keybd_event('`', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_OEM_3, 0, 0, 0);
+                        keybd_event(VK_OEM_3, 0, KEYEVENTF_KEYUP, 0);
                         keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 2 && words[1] == 4 && words[2] == 3 && words[3] == 5) {
                         keybd_event(VK_SHIFT, 0, 0, 0);
-                        keybd_event('-', 0, 0, 0);
-                        keybd_event('-', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_OEM_MINUS, 0, 0, 0);
+                        keybd_event(VK_OEM_MINUS, 0, KEYEVENTF_KEYUP, 0);
                         keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 1 && words[1] == 3 && words[2] == 3 && words[3] == 5) {
                         keybd_event(VK_SHIFT, 0, 0, 0);
-                        keybd_event(';', 0, 0, 0);
-                        keybd_event(';', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_OEM_1, 0, 0, 0);
+                        keybd_event(VK_OEM_1, 0, KEYEVENTF_KEYUP, 0);
                         keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 2 && words[1] == 2 && words[2] == 3 && words[3] == 5) {
-                        keybd_event(';', 0, 0, 0);
-                        keybd_event(';', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_OEM_1, 0, 0, 0);
+                        keybd_event(VK_OEM_1, 0, KEYEVENTF_KEYUP, 0);
                     }
 
                     if (words[0] == 3 && words[1] == 1 && words[2] == 4 && words[3] == 4) {
@@ -388,20 +390,22 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                     }
                     if (words[0] == 1 && words[1] == 3 && words[2] == 4 && words[3] == 4) {
                         keybd_event(VK_SHIFT, 0, 0, 0);
-                        keybd_event(',', 0, 0, 0);
-                        keybd_event(',', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_OEM_COMMA, 0, 0, 0);
+                        keybd_event(VK_OEM_COMMA, 0, KEYEVENTF_KEYUP, 0);
                         keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 2 && words[1] == 2 && words[2] == 4 && words[3] == 4) {
                         keybd_event(VK_SHIFT, 0, 0, 0);
-                        keybd_event('.', 0, 0, 0);
-                        keybd_event('.', 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_OEM_PERIOD, 0, 0, 0);
+                        keybd_event(VK_OEM_PERIOD, 0, KEYEVENTF_KEYUP, 0);
                         keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
                     }
 
                     if (words[0] == 3 && words[1] == 1 && words[2] == 5 && words[3] == 3) {
+                        keybd_event(VK_SHIFT, 0, 0, 0);
                         keybd_event(VK_OEM_PLUS, 0, 0, 0);
                         keybd_event(VK_OEM_PLUS, 0, KEYEVENTF_KEYUP, 0);
+                        keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
                     }
                     if (words[0] == 4 && words[1] == 2 && words[2] == 5 && words[3] == 3) {
                         keybd_event(VK_OEM_MINUS, 0, 0, 0);
