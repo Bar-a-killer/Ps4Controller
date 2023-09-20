@@ -20,7 +20,7 @@ static int findJoystick(int* buttonNum) {
     JOYCAPS joycaps;
     MMRESULT ret;
 
-    XINPUT_STATE controllerState;
+    //XINPUT_STATE controllerState;
     /*for (int i = 0; i < 20; i++) {
         DWORD result = XInputGetState(i, &controllerState); // 檢查第一個控制器的狀態
         if (result == ERROR_SUCCESS) {
