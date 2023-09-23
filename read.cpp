@@ -151,16 +151,16 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
             x = joyinfoAxis[2] / 1600 - 21;
             y = joyinfoAxis[3] / 1600 - 21;
         }
-        if (x == -1 && y == -1)
-            x++, y++;
-        if (x == 1 && y == 1)
-            x--, y--;
+        if (x <= 3 && x >= -3)
+            x = 0;
+        if (y <= 3 && y >= -3)
+            y = 0;
         point.x += x;
         point.y += y;
         //printf("mos: %d %d\n", x, y);
         ::SetCursorPos(point.x, point.y);
         int wheel = joyinfoAxis[1] / 400 - 82;
-        if (wheel == -1)
+        if (wheel <= 3 && wheel >= -3)
             wheel = 0;
         ::mouse_event(MOUSEEVENTF_WHEEL, point.x, point.y, wheel, 0);
     }
@@ -180,19 +180,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 long long moverange2 = 50000;
                 int lr = 1;
                 //printf("axis Y: %d\n", Xaxis * Xaxis + Yaxis * Yaxis);
-                if (Xaxis * -12 <= 5 * Yaxis && Xaxis * 12  <= 5 * Yaxis) {
-                    if (i == 0 && Lmode != 1) {
-                        Lmode = 1;
-                        change = 1;
-                        //printf("Lmode 1");
-                    }
-                    if (i == 2 && Rmode != 1) {
-                        Rmode = 1;
-                        change = 1;
-                        //printf("Rmode 1");
-                    }
-                    lr = 3;
-                }
+                //printf("X: %d Y: %d\n", Xaxis, Yaxis);
                 if (Xaxis * 2   <= 5 * Yaxis && Xaxis * 12  >  5 * Yaxis) {
                     if (i == 0 && Lmode != 2) {
                         Lmode = 2;
@@ -231,19 +219,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         //printf("Rmode 4");
                     }
                 }
-                if (Xaxis * 12  >  5 * Yaxis && Xaxis * -12 >  5 * Yaxis) {
-                    if (i == 0 && Lmode != 5) {
-                        Lmode = 5;
-                        change = 1;
-                        //printf("Lmode 5");
-                    }
-                    if (i == 2 && Rmode != 5) {
-                        Rmode = 5;
-                        change = 1;
-                        //printf("Rmode 5");
-                    }
-                    lr = 3;
-                }
+                
                 if (Xaxis * 12  <= 5 * Yaxis && Xaxis * 2   >  5 * Yaxis) {
                     if (i == 0 && Lmode != 6) {
                         Lmode = 6;
@@ -283,6 +259,33 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                     }
                 }
                 
+                if (Xaxis < 27000 && Xaxis > -27000 && Yaxis > 0) {
+                    if (i == 0 && Lmode != 1) {
+                        Lmode = 1;
+                        change = 1;
+                        //printf("Lmode 1");
+                    }
+                    if (i == 2 && Rmode != 1) {
+                        Rmode = 1;
+                        change = 1;
+                        //printf("Rmode 1");
+                    }
+                    lr = 3;
+                }
+                if (Xaxis < 27000 && Xaxis > -27000 && Yaxis < 0) {
+                    if (i == 0 && Lmode != 5) {
+                        Lmode = 5;
+                        change = 1;
+                        //printf("Lmode 5");
+                    }
+                    if (i == 2 && Rmode != 5) {
+                        Rmode = 5;
+                        change = 1;
+                        //printf("Rmode 5");
+                    }
+                    lr = 3;
+                }
+
                 if (lr == 1 && Xaxis * Xaxis + Yaxis * Yaxis < static_cast<long long>(moverange) * moverange) {
                     if (i == 0) {
                         Lmode = 0;
@@ -305,7 +308,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         continue;
                     }
                 }
-                if (lr == 3 && Yaxis <  30000 && Yaxis > -30000) {
+                if (lr == 3 && Yaxis < 50000 && Yaxis > -50000) {
                     if (i == 0) {
                         Lmode = 0;
                         //printf("X\n");
@@ -317,6 +320,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         continue;
                     }
                 }
+                
                 /*if (axis < 2494 && words[i] != 1)
                 {
                 words[i] = 1;
@@ -348,10 +352,10 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 if (change) {
                     
                     if (i == 0) {
-                        printf("Lmode %d\n", Lmode);
+                        printf("\nLmode %d\n", Lmode);
                     }
                     if (i == 2 ) {
-                        printf("Rmode %d\n", Rmode);
+                        printf("\nRmode %d\n", Rmode);
                     }
 
                     //printf("\n");
