@@ -6,7 +6,8 @@
 #include<locale.h>
 #include<cmath>
 #include<xinput.h>
-const int SLEEP_INTERVAL = 13; //50 FPS
+const int SLEEP_INTERVAL = 13; //75+ FPS
+
 typedef struct {
     DWORD button;
     DWORD axis[6];
@@ -15,6 +16,8 @@ typedef struct {
 
 //函式傳回手把編號
 //buttonNum傳回按鈕數，讀取手把輸入時會用到
+
+//這個function用於check手把有沒有接上
 static int findJoystick(int* buttonNum) {
     int joyId = -1;
     JOYCAPS joycaps;
@@ -35,6 +38,8 @@ static int findJoystick(int* buttonNum) {
         else
             printf("NO!%d",i);
     }*/
+    /*上面那串註解希望以後能用*/
+
     for (int i = 0; i < 16; i++) {
         
         JOYINFO joyinfo;
@@ -65,13 +70,20 @@ static int findJoystick(int* buttonNum) {
     return joyId;
 }
 
-int repov = 0;
-POINT point;
-bool msmode = 0;
-int words[7] = { 0 };
-int Lmode = 0,Rmode = 0;
+
+//-----------下面會用到的變數們-------------//
+int repov = 0; //其實應該沒什麼用了 但俗話說:「程式沒bug就不要動它」
+POINT point; //滑鼠操作會用來裝滑鼠狀態的變數
+bool msmode = 0; //分辨是不是滑鼠模式
+int words[7] = { 0 }; //其實應該沒什麼用了 但俗話說:「程式沒bug就不要動它」
+int Lmode = 0,Rmode = 0; //分辨左右的方向
+//-----------下面會用到的變數們-------------//
+
+//---------------------主要函式(我的工作區域，其他幾乎都是抄來的)-------------------//
 //手把拔出則傳回0，此時要重新尋找手把
 static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState) {
+
+    //////////////////////////////////////////////////////(等等出現一長串/就是我也懶得看懂)
     MMRESULT ret;
     JOYINFOEX joyinfo;
     joyinfo.dwSize = sizeof(JOYINFOEX);
@@ -81,13 +93,15 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
         printf("--joystick is removed\n");
         return 0;
     }
-
+    /////////////////////////////////////////////////////
+    
     //跟前一個frame的狀態比對，找出有變化的輸入
-    //按鈕
-
+    
+    
+    //++++++++++++++++++++++按鈕+++++++++++++++++++++++//
     DWORD bitFlag = 1;
     DWORD changedButtons = prevState->button ^ joyinfo.dwButtons;
-
+    //每個不同的按鍵的i都不同
     for (int i = 1; i <= buttonNum; i++, bitFlag = bitFlag << 1) {
         if (!(changedButtons & bitFlag)) { continue; }
         if (joyinfo.dwButtons & bitFlag) {
@@ -98,9 +112,8 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 keybd_event(VK_ESCAPE, 0, 0, 0);// Escape键
             if (i == 3)
                 keybd_event(VK_TAB, 0, 0, 0);// Tab键
-            if (i == 4) {
+            if (i == 4) 
                 msmode = !msmode;
-            }
             if (i == 5)
                 keybd_event(VK_SHIFT, 0, 0, 0);//shift鍵
             if (i == 6)
@@ -136,7 +149,11 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 ::mouse_event(MOUSEEVENTF_RIGHTUP, point.x, point.y, 0, 0);
         }
     }
-    //軸
+    //++++++++++++++++++++++按鈕+++++++++++++++++++++++//
+    
+
+
+    //++++++++++++++++++++++軸+++++++++++++++++++++++++//
     DWORD* joyinfoAxis = &joyinfo.dwXpos;
     if (msmode) {
         int x, y;
@@ -668,7 +685,10 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
             }
         }
     }
-    //視覺頭盔
+    //++++++++++++++++++++++軸+++++++++++++++++++++++++//
+
+
+    //++++++++++++++++++++++視覺頭盔+++++++++++++++++++//
     if (prevState->pov != joyinfo.dwPOV) {
         printf("POV: %u\n", joyinfo.dwPOV);
         int pov = joyinfo.dwPOV;
@@ -727,7 +747,9 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
         }
         repov = pov;
     }
-
+    //++++++++++++++++++++++視覺頭盔+++++++++++++++++++//
+    
+   
     //把這個frame的狀態保存
     prevState->button = joyinfo.dwButtons;
     prevState->pov = joyinfo.dwPOV;
@@ -735,6 +757,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
     return 1;
 }
 
+////////////////////////////////////////////////////////
 int main() {
     setlocale(LC_ALL, "cht"); //讓printf可以印出中文
     int joyId = -1;
@@ -757,3 +780,4 @@ int main() {
     }
     return 0;
 }
+////////////////////////////////////////////////////////////
