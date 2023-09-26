@@ -73,7 +73,7 @@ static int findJoystick(int* buttonNum) {
 
 //-----------下面會用到的變數們-------------//
 int repov = 0; //其實應該沒什麼用了 但俗話說:「程式沒bug就不要動它」
-POINT point; //滑鼠操作會用來裝滑鼠狀態的變數
+POINT point;  //滑鼠操作會用來裝滑鼠狀態的變數
 bool msmode = 0; //分辨是不是滑鼠模式
 int words[7] = { 0 }; //其實應該沒什麼用了 但俗話說:「程式沒bug就不要動它」
 int Lmode = 0,Rmode = 0; //分辨左右的方向
@@ -762,6 +762,8 @@ int main() {
     setlocale(LC_ALL, "cht"); //讓printf可以印出中文
     int joyId = -1;
     int buttonNum;
+    point.x = 0;
+    point.y = 0;
     for (;; Sleep(SLEEP_INTERVAL)) {
         //一、尋找手把
         joyId = findJoystick(&buttonNum);
