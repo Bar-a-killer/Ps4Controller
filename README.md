@@ -1,4 +1,4 @@
 # Ps4Controler
 ## picture
-![](https://hackmd.io/_uploads/Bkz8teNlp.png)
-![](https://hackmd.io/_uploads/ryWwYlVlT.png)
+![按鍵式意圖](https://hackmd.io/_uploads/Bkz8teNlp.png)
+![鍵盤示意圖片](https://hackmd.io/_uploads/ryWwYlVlT.png)
