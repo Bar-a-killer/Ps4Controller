@@ -1,5 +1,7 @@
-﻿  正在產生程式碼
-  Previous IPDB and IOBJ mismatch, fall back to full compilation.
-  All 6 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+﻿  read.cpp
+  正在產生程式碼
+  1 of 6 functions (16.7%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
   已完成程式碼產生
   Ps4controler.vcxproj -> D:\c,cpp_code\Ps4controler\x64\Release\Ps4controler.exe

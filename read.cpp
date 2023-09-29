@@ -222,7 +222,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         //printf("Rmode 3");
                     }
                     moverange = 200;
-                    lr = 0;
+                    lr = 2;
                 }
                 if (Xaxis * -12 <= 5 * Yaxis && Xaxis * -2  >  5 * Yaxis) {
                     if (i == 0 && Lmode != 4) {
@@ -261,7 +261,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                         //printf("Rmode 7");
                     }
                     moverange = moverange2;
-                    lr = 0;
+                    lr = 2;
                 }
                 if (Xaxis * -2  <= 5 * Yaxis && Xaxis * -12 >  5 * Yaxis) {
                     if (i == 0 && Lmode != 8) {
@@ -313,7 +313,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                     //printf("X\n");
                     continue;
                 }
-                if (lr == 0 && Xaxis < 50000 && Xaxis > -50000) {
+                if (lr == 2 && Xaxis < 50000 && Xaxis > -50000) {
                     if (i == 0) {
                         Lmode = 0;
                         //printf("X\n");
