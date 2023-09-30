@@ -157,28 +157,40 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
     DWORD* joyinfoAxis = &joyinfo.dwXpos;
     if (msmode) {
         int x, y;
+        int Ynegative = 1,Xnegative = 1;
         ::GetCursorPos(&point);
-        if (joyinfoAxis[2] > 13683 && joyinfoAxis[2] < 49151 && joyinfoAxis[3]>13683 && joyinfoAxis[3] < 49151)
+        x = joyinfoAxis[2] - 32767;
+        y = joyinfoAxis[3] - 32767;
+        if (x < 0) {
+            Xnegative = -1;
+            x *= -1;
+        }
+        if (y < 0) {
+            Ynegative = -1;
+            y *= -1;
+        }
+        if (x < 13683 && x > -1 && y < 13683 && y > -1)
         {
-            x = joyinfoAxis[2] / 3200 - 10;
-            y = joyinfoAxis[3] / 3200 - 10;
+            x = x / 3200; x*= Xnegative;
+            y = y / 3200; y*= Ynegative;
         }
         else
         {
-            x = joyinfoAxis[2] / 1600 - 21;
-            y = joyinfoAxis[3] / 1600 - 21;
+            x = x / 1600; x*= Xnegative;
+            y = y / 1600; y*= Ynegative;
         }
-        if (x <= 3 && x >= -3)
-            x = 0;
-        if (y <= 3 && y >= -3)
-            y = 0;
         point.x += x;
         point.y += y;
         //printf("mos: %d %d\n", x, y);
         ::SetCursorPos(point.x, point.y);
-        int wheel = joyinfoAxis[1] / 400 - 82;
-        if (wheel <= 3 && wheel >= -3)
-            wheel = 0;
+        int Znegetive = 1;
+        int wheel = joyinfoAxis[1] - 32767;
+
+        if (wheel < 0) {
+            Znegetive = -1;
+            wheel *= -1;
+        }
+        wheel /= 400; wheel *= Znegetive;
         ::mouse_event(MOUSEEVENTF_WHEEL, point.x, point.y, wheel, 0);
     }
     for (int i = 0; i < 6; i+=2) {
