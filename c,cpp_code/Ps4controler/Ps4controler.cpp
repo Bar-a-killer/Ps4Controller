@@ -199,7 +199,7 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
         point.y += y;
         //printf("mos: %d %d\n", x, y);
         ::SetCursorPos(point.x, point.y);
-        int Znegetive = 1;
+        int Znegetive = 1; printf("%d\n", joyinfoAxis[1]);
         int wheel = joyinfoAxis[1] - 32767;
 
         if (wheel < 0) {
