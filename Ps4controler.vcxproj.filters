@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="read.cpp">
+    <ClCompile Include="Ps4controler.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
   </ItemGroup>

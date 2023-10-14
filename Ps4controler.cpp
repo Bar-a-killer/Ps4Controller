@@ -114,10 +114,20 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 keybd_event(VK_TAB, 0, 0, 0);// Tab键
             if (i == 4) 
                 msmode = !msmode;
-            if (i == 5)
-                keybd_event(VK_SHIFT, 0, 0, 0);//shift鍵
-            if (i == 6)
-                keybd_event(VK_BACK, 0, 0, 0);//back鍵
+            if (i == 5) {
+                if(msmode)
+                    ::mouse_event(MOUSEEVENTF_LEFTDOWN, point.x, point.y, 0, 0);
+                else
+                    keybd_event(VK_SHIFT, 0, 0, 0);//shift鍵
+            }
+                
+            if (i == 6) {
+                if(msmode)
+                    ::mouse_event(MOUSEEVENTF_RIGHTDOWN, point.x, point.y, 0, 0);
+                else
+                    keybd_event(VK_BACK, 0, 0, 0);//back鍵
+            }
+                
             if (i == 7)
                 keybd_event(VK_SPACE, 0, 0, 0);//space鍵
             if (i == 8)
@@ -135,10 +145,20 @@ static int readJoystickState(int joyId, int buttonNum, JoystickState* prevState)
                 keybd_event(VK_ESCAPE, 0, KEYEVENTF_KEYUP, 0);// Escape键
             if (i == 3)
                 keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);// Tab键
-            if (i == 5)
-                keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);//shift鍵
-            if (i == 6)
-                keybd_event(VK_BACK, 0, KEYEVENTF_KEYUP, 0);//back鍵
+            if (i == 5) {
+                if(msmode)
+                    ::mouse_event(MOUSEEVENTF_LEFTUP, point.x, point.y, 0, 0);
+                else
+                    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);//shift鍵
+            }
+                
+            if (i == 6) {
+                if(msmode)
+                    ::mouse_event(MOUSEEVENTF_RIGHTUP, point.x, point.y, 0, 0);
+                else
+                    keybd_event(VK_BACK, 0, KEYEVENTF_KEYUP, 0);//back鍵
+            }
+                
             if (i == 7)
                 keybd_event(VK_SPACE, 0, KEYEVENTF_KEYUP, 0);//space鍵
             if (i == 8)

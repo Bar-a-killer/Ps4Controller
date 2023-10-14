@@ -1,1 +1,2 @@
 D:\c,cpp_code\Ps4controler\x64\Release\Ps4controler.exe
+C:\Users\chann\Desktop\Ps4controlle\x64\Release\Ps4controler.exe
