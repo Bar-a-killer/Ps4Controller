@@ -1,3 +1,0 @@
-﻿  read.cpp
-D:\c,cpp_code\Ps4controler\read.cpp(23,18): warning C4101: 'controllerState': 未參考的區域變數
-  Ps4controler.vcxproj -> D:\c,cpp_code\Ps4controler\x64\Debug\Ps4controler.exe
