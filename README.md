@@ -9,6 +9,6 @@
 ### 如果覺得查表不直覺，可以參照下圖練習打字(當兩方向之字母相同則打出該字)
 
 ![](https://raw.githubusercontent.com/Bar-a-killer/Ps4Controller/main/help/%E7%A4%BA%E6%84%8F%E5%9C%96.png)
-### [作者測試](https://github.com/Bar-a-killer/Ps4Controller/blob/main/help/IMG_7094.gif)
+## [作者測試](https://github.com/Bar-a-killer/Ps4Controller/blob/main/help/IMG_7094.gif)
 ### 用AI畫的貓咪(可愛)
 ![](https://raw.githubusercontent.com/Bar-a-killer/Ps4Controller/main/help/AIcat.jpeg)
