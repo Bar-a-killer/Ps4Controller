@@ -1,4 +1,4 @@
-# Ps4Controler
+# Ps4Controller
 ## picture
 ![感應區域](https://raw.githubusercontent.com/Bar-a-killer/Ps4Controler/main/help/detectable.jpg)
 ![按鍵圖示](https://github.com/Bar-a-killer/Ps4Controler/blob/main/help/gesture.png)
