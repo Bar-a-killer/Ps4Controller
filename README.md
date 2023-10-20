@@ -1,8 +1,8 @@
 # Next-Level Typing: Innovating Keyboards with Game Controller Features
 
 ## ~~遊戲搖桿外掛~~全新的鍵盤滑鼠選擇
-![英文論文-作者Gisselle](https://docs.google.com/document/d/1JxDstr3RsPfJLiWM2gzea3LqMRVgefcIDXtrezKySNg/edit?usp=sharing)
-![中文論文-作者Bar](https://docs.google.com/document/d/1Q2ETZSplnWTdORtYDw9SVrERw473R_R0VNYkRyjINpQ/edit?usp=sharing)
+[英文論文-作者Gisselle](https://docs.google.com/document/d/1JxDstr3RsPfJLiWM2gzea3LqMRVgefcIDXtrezKySNg/edit?usp=sharing)
+[中文論文-作者Bar](https://docs.google.com/document/d/1Q2ETZSplnWTdORtYDw9SVrERw473R_R0VNYkRyjINpQ/edit?usp=sharing)
 ### 本專案可將遊戲控制器轉變成鍵盤及滑鼠功用(如下所示)
 ![](https://raw.githubusercontent.com/Bar-a-killer/Ps4Controller/main/help/gesture.png)
 ### 而蘑菇頭則負責打出字母(如下表)
