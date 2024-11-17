@@ -1,0 +1,4 @@
+﻿  Keyless_keyboard.cpp
+D:\c,cpp_code\Ps5Controler\Ps4Controler\VSfile\Keyless_keyvboard\Keyless_keyboard.cpp(1,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+D:\c,cpp_code\Ps5Controler\Ps4Controler\VSfile\Keyless_keyvboard\Keyless_keyboard.cpp(687,1): warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+  Keyless_keyvboard.vcxproj -> D:\c,cpp_code\Ps5Controler\Ps4Controler\VSfile\Keyless_keyvboard\x64\Debug\Keyless_keyvboard.exe
